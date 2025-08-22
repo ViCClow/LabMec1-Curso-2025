@@ -81,31 +81,32 @@ void loop() {
   }
 
 
-  //lcd.setCursor(3, 1);
-  //lcd.print(t2);
+//============ This could be a function =================
+  lcd.setCursor(3, 1);
+  lcd.print(t2);
   //lcd.print(" +- 0.005 [s]");
 
-  //lcd.setCursor(3, 2);
-  //lcd.print(t3);
+  lcd.setCursor(3, 2);
+  lcd.print(t3);
   //lcd.print(" +- 0.005 [s]");
 
-  //lcd.setCursor(3, 3);
-  //lcd.print(t4);
+  lcd.setCursor(3, 3);
+  lcd.print(t4);
   //lcd.print(" +- 0.005 [s]");
   
 }
 
 
-//============ Mejor hacer funciones? ===========//
+//============ Funciones (Try objects when you can.) ===========//
 
 void TemplateDisplay() {
   lcd.setCursor(0, 0);
   lcd.print("B1:");
-  //lcd.setCursor(0, 1);
-  //lcd.print("B2:");
-  //lcd.setCursor(0, 2);
-  //lcd.print("B3:");
-  //lcd.setCursor(0, 3);
-  //lcd.print("B4:");
+  lcd.setCursor(0, 1);
+  lcd.print("B2:");
+  lcd.setCursor(0, 2);
+  lcd.print("B3:");
+  lcd.setCursor(0, 3);
+  lcd.print("B4:");
   return 0;
 }
