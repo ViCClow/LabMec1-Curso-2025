@@ -1,48 +1,69 @@
-/* ===== Time of flight sensor ===== */
-// Primer codigo para ToF sensor
-// La idea de este codigo es aprender a usarlo para integrarlo mas tarde
-// al Arduino. Debe funcionar aquí primero
+  /* This example shows how to get single-shot range
+ measurements from the VL53L0X. The sensor can optionally be
+ configured with different ranging profiles, as described in
+ the VL53L0X API user manual, to get better performance for
+ a certain application. This code is based on the four
+ "SingleRanging" examples in the VL53L0X API.
 
-/* Librerias */
+ The range readings are in units of mm. */
 
-#include "Adafruit_VL53L0X.h" //Libreria para sensor ToF 
 #include <Wire.h>
+#include <VL53L0X.h>
 
-/* ============================= */
+VL53L0X sensor;
 
-const int BAUDRATE = 9600;
 
-// Llamando sensor ToF
-Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+// Uncomment this line to use long range mode. This
+// increases the sensitivity of the sensor and extends its
+// potential range, but increases the likelihood of getting
+// an inaccurate reading because of reflections from objects
+// other than the intended target. It works best in dark
+// conditions.
 
-void setup() {
-  Serial.begin(BAUDRATE);
+#define LONG_RANGE;
 
-  // Initialize sensor
-  Serial.println("VL53L0X test");
-  if (!lox.begin()) {
-    Serial.println(F("Error initializing VL53L0X"));
-    while(1);
+
+// Uncomment ONE of these two lines to get
+// - higher speed at the cost of lower accuracy OR
+// - higher accuracy at the cost of lower speed
+
+//#define HIGH_SPEED
+#define HIGH_ACCURACY;
+
+
+void setup()
+{
+  Serial.begin(9600);
+  Wire.begin();
+
+  sensor.setTimeout(500);
+  if (!sensor.init())
+  {
+    Serial.println("Failed to detect and initialize sensor!");
+    while (1);
   }
 
+#if defined LONG_RANGE
+  // lower the return signal rate limit (default is 0.25 MCPS)
+  sensor.setSignalRateLimit(0.1);
+  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+  sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
+  sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+#endif
+
+#if defined HIGH_SPEED
+  // reduce timing budget to 20 ms (default is about 33 ms)
+  sensor.setMeasurementTimingBudget(20000);
+#elif defined HIGH_ACCURACY
+  // increase timing budget to 200 ms
+  sensor.setMeasurementTimingBudget(200000);
+#endif
 }
 
-void loop() {
+void loop()
+{
+  Serial.print(sensor.readRangeSingleMillimeters());
+  if (sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
 
-  VL53L0X_RangingMeasurementData_t measure;  
-
-  Serial.println("Reading sensor... ");
-  lox.rangingTest(&measure, false); //if true is passed as a parameter, it shows debug data on the serial port
-  
-  if (value && start ) {
-    if (measure.RangeStatus != 4){
-      Serial.print("Distance (mm): ");
-      Serial.println(measure.RangeMilliMeter);
-    } 
-    else{
-      Serial.println("  Out of range ");
-    }
-  }
-  
+  Serial.println();
 }
-
