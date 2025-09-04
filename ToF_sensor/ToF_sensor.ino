@@ -27,8 +27,8 @@ VL53L0X sensor;
 // - higher speed at the cost of lower accuracy OR
 // - higher accuracy at the cost of lower speed
 
-//#define HIGH_SPEED
-#define HIGH_ACCURACY;
+#define HIGH_SPEED
+//#define HIGH_ACCURACY;
 
 
 void setup()
@@ -48,7 +48,7 @@ void setup()
   sensor.setSignalRateLimit(0.1);
   // increase laser pulse periods (defaults are 14 and 10 PCLKs)
   sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
-  sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+  sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14); //Que ocurre si cambio a 10 o a 8?
 #endif
 
 #if defined HIGH_SPEED
@@ -66,4 +66,6 @@ void loop()
   if (sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
 
   Serial.println();
+
+  delay(5000);
 }
