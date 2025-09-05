@@ -58,18 +58,20 @@ void loop() {
   //Serial.println(value);  //Debug
 
   if (pressed) {
-    t1 = 0;
+    t1, t2, t3, t4 = 0;
     t_inicial = (double)millis();
     digitalWrite(laserPins, HIGH);
     value = digitalRead(photoResPins);  //Si se desalinea, esta variable se mantendra TRUE.
-    lcd.setCursor(3, 0);
-    lcd.print(t1);
+    lcd.clear();
+    TemplateDisplay();
+
     //Serial.println(value);            //Debug
     start = 1;
   }
 
   if (value && start) {
     t1 = (double)millis() - t_inicial;  // Tiempo transcurrido tras pasar primera barrera
+    t2 = (double)millis() - t_inicial;  // Tiempo transcurrido tras pasar primera barrera
     t1 = t1 / 1000;
     //Serial.print("Tiempo en que activo la barrera en segundos: ");
     //Serial.println(t1);
@@ -79,49 +81,43 @@ void loop() {
     digitalWrite(laserPins, LOW);
   }
 
-  lcd.setCursor(3, 0);
-  //lcd.print(t1);
-  //lcd.print("s");
-
-
-  //============ This could be a function =================
-  lcd.setCursor(3, 1);
-  lcd.print(t2);
-  //lcd.print(" +- 0.005 [s]");
-
-  lcd.setCursor(3, 2);
-  lcd.print(t3);
-  //lcd.print(" +- 0.005 [s]");
-
-  lcd.setCursor(3, 3);
-  lcd.print(t4);
-  //lcd.print(" +- 0.005 [s]");
-}
+timeDisplay(0,3,t1);
+timeDisplay(1,3,t2);
+timeDisplay(2,3,t3);
+timeDisplay(3,3,t4);
 
 
 //============ Funciones (Try objects when you can.) ===========//
+
+void timeDisplay(int a, int b, double c) {
+  lcd.setCursor(a, b);
+  lcd.print(c);
+  lcd.print("s");
+
+return 0
+}
 
 void TemplateDisplay() {
 
   lcd.setCursor(0, 0);
   lcd.print("B1:");
   lcd.print(t1);
-  //lcd.print("s");
+  lcd.print("s");
 
   lcd.setCursor(0, 1);
   lcd.print("B2:");
   lcd.print(t2);
-  //lcd.print("s");
+  lcd.print("s");
 
   lcd.setCursor(0, 2);
   lcd.print("B3:");
   lcd.print(t3);
-  //lcd.print("s");
+  lcd.print("s");
 
   lcd.setCursor(0, 3);
   lcd.print("B4:");
   lcd.print(t4);
-  //lcd.print("s");
+  lcd.print("s");
 
 return 0;
 }
