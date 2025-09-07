@@ -40,11 +40,12 @@ void setup() {
   pinMode(button, INPUT);
 
   // Initialize pins
-  for (int i = 0; i < numPairs; ++i)
+  for (int i = 0; i < numPairs; i++){
     pinMode(laserPins, OUTPUT);
     digitalWrite(laserPins, HIGH);
-
-  pinMode(photoResPins, INPUT_PULLUP);
+  }
+    
+    pinMode(photoResPins, INPUT_PULLUP);
 }
 
 void loop() {
@@ -54,8 +55,10 @@ void loop() {
   bool pressed = digitalRead(button);
   //Serial.println(pressed);  //Debug
 
-  bool value = digitalRead(photoResPins);
-  //Serial.println(value);  //Debug
+  for (int i=0; i<numPairs; i++){
+    bool value[3] = digitalRead(photoResPins);
+    Serial.println(value[]);  //Debug
+  }
 
   if (pressed) {
     t1, t2, t3, t4 = 0;
@@ -85,7 +88,7 @@ timeDisplay(0,3,t1);
 timeDisplay(1,3,t2);
 timeDisplay(2,3,t3);
 timeDisplay(3,3,t4);
-
+}
 
 //============ Funciones (Try objects when you can.) ===========//
 
