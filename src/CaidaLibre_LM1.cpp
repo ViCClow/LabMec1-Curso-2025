@@ -13,9 +13,7 @@
 #include <LiquidCrystal_I2C.h>
 
 /* ============================= */
-
-void timeDisplay(int a, int b, double c) ;
-void TemplateDisplay();
+void TimeDisplay();
 
 const int BAUDRATE = 9600;
 
@@ -59,7 +57,7 @@ void setup() {
 
 void loop() {
 
-  TemplateDisplay();
+  TimeDisplay();
 
   //============ Restart button ============//
   //  For debugging uncomment the Serial.println line
@@ -87,7 +85,7 @@ void loop() {
     }
   
     lcd.clear();
-    TemplateDisplay();
+    TimeDisplay();
     start = 1;
   }
 
@@ -96,35 +94,36 @@ void loop() {
     if (photoResPrevStates[0] == LOW && photoResStates[0] == HIGH && t1 == 0) {
       t1 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar primera barrera
       digitalWrite(laserPins[0], LOW);
-      timeDisplay(0,3,t1);
+      //lcd.setCursor(0,3);
+      //lcd.print(t1);
+      //lcd.print("s"); 
     }
     // Para B2
     if (photoResPrevStates[1] == LOW && photoResStates[1] == HIGH && t2 == 0) {
       t2 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar segunda barrera
       digitalWrite(laserPins[1], LOW);
-      timeDisplay(1,3,t2);
+      //lcd.setCursor(1,3);
+      //lcd.print(t2);
+      //lcd.print("s");
     }
   
   // ========== Actualizar estados previos. ========== //
   for (int i = 0; i < numPairs; ++i) {
     photoResPrevStates[i] = photoResStates[i];
   }
-
-    //=========== Desactivar barrera. ===========//
-
 }
 
 //============ Funciones (Try objects when you can.) ===========//
 
-void timeDisplay(int a, int b, double c) {
-  lcd.setCursor(a, b);
-  lcd.print(c);
-  lcd.print("s");
+//void timeDisplay(int a, int b, double c) {
+//  lcd.setCursor(a, b);
+//  lcd.print(c);
+//  lcd.print("s");
+//
+//return ;
+//}
 
-return ;
-}
-
-void TemplateDisplay() {
+void TimeDisplay() {
 
   lcd.setCursor(0, 0);
   lcd.print("B1:");
@@ -136,15 +135,15 @@ void TemplateDisplay() {
   lcd.print(t2);
   lcd.print("s");
 
-//  lcd.setCursor(0, 2);
-//  lcd.print("B3:");
-//  lcd.print(t3);
-//  lcd.print("s");
-//
-  //lcd.setCursor(0, 3);
-  //lcd.print("B4:");
-  //lcd.print(t4);
-  //lcd.print("s");
+  lcd.setCursor(0, 2);
+  lcd.print("B3:");
+  lcd.print(t3);
+  lcd.print("s");
+
+  lcd.setCursor(0, 3);
+  lcd.print("B4:");
+  lcd.print(t4);
+  lcd.print("s");
 
 return ;
 }
