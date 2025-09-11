@@ -24,8 +24,8 @@ double t1, t2, t3, t4 = 0;
 bool start = 1;
 
 
-const int laserPins[] = { 3, 5};           // Pines conectados a los láseres
-const int photoResPins[] = { 4, 6};   // Pines conectados a las fotoresistencias
+const int laserPins[] = {3, 5, 7, 9};           // Pines conectados a los láseres
+const int photoResPins[] = {4, 6, 8, 10};   // Pines conectados a las fotoresistencias
 int button = 2;                       // Pin de reset de la barrera
 
 int numPairs = sizeof(laserPins)/sizeof(laserPins[0]);  // Numero de modulos
@@ -36,15 +36,15 @@ bool photoResPrevStates[sizeof(photoResPins)/sizeof(photoResPins[0])]; // Estado
 
 void setup() {
   Serial.begin(BAUDRATE);
-
+  // ====== LCD ========//
   lcd.init();
   lcd.backlight();
+// =================//
 
   t_inicial = millis();
-
   pinMode(button, INPUT_PULLUP);
 
-  // Initialize pins
+  //================= Inicializar pines ===============//
   for (int i = 0; i < numPairs; ++i) {
     pinMode(laserPins[i], OUTPUT);
     digitalWrite(laserPins[i], HIGH);
@@ -53,6 +53,7 @@ void setup() {
 
     photoResPrevStates[i] = digitalRead(photoResPins[i]);
   }
+  //===========================================//
 }
 
 void loop() {
@@ -86,26 +87,38 @@ void loop() {
   
     lcd.clear();
     TimeDisplay();
-    start = 1;
   }
 
   //=========== Measure time ============//
+  // En los comentarios podemos ver la implemetación de a función BarrierTrigered.
+
     // Para B1
-    if (photoResPrevStates[0] == LOW && photoResStates[0] == HIGH && t1 == 0) {
-      t1 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar primera barrera
-      digitalWrite(laserPins[0], LOW);
-      //lcd.setCursor(0,3);
-      //lcd.print(t1);
-      //lcd.print("s"); 
-    }
+    BarrierTrigered(0, t1);
+    //if (photoResPrevStates[0] == LOW && photoResStates[0] == HIGH && t1 == 0) {
+    //  t1 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar primera barrera
+    //  digitalWrite(laserPins[0], LOW);
+    // }
+
     // Para B2
-    if (photoResPrevStates[1] == LOW && photoResStates[1] == HIGH && t2 == 0) {
-      t2 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar segunda barrera
-      digitalWrite(laserPins[1], LOW);
-      //lcd.setCursor(1,3);
-      //lcd.print(t2);
-      //lcd.print("s");
-    }
+    BarrierTrigered(1, t2);
+    //if (photoResPrevStates[1] == LOW && photoResStates[1] == HIGH && t2 == 0) {
+    //  t2 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar segunda barrera
+    //  digitalWrite(laserPins[1], LOW);
+    // }
+
+    // Para B3
+    BarrierTrigered(2, t3);
+    //if (photoResPrevStates[2] == LOW && photoResStates[2] == HIGH && t3 == 0) {
+    //  t3 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar tercera barrera
+    //  digitalWrite(laserPins[2], LOW);
+    // }
+
+    // Para B4
+    BarrierTrigered(3, t4); 
+   // if (photoResPrevStates[3] == LOW && photoResStates[3] == HIGH && t4 == 0) {
+   //   t4 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar cuarta barrera
+   //   digitalWrite(laserPins[3], LOW);
+   // }
   
   // ========== Actualizar estados previos. ========== //
   for (int i = 0; i < numPairs; ++i) {
@@ -114,14 +127,6 @@ void loop() {
 }
 
 //============ Funciones (Try objects when you can.) ===========//
-
-//void timeDisplay(int a, int b, double c) {
-//  lcd.setCursor(a, b);
-//  lcd.print(c);
-//  lcd.print("s");
-//
-//return ;
-//}
 
 void TimeDisplay() {
 
@@ -146,4 +151,12 @@ void TimeDisplay() {
   lcd.print("s");
 
 return ;
+}
+
+void BarrierTrigered(int i, double &t) {
+    if (photoResPrevStates[i] == LOW && photoResStates[i] == HIGH && t == 0) {
+      t = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar barrera
+      digitalWrite(laserPins[i], LOW);
+    }
+  // Placeholder for future use
 }
