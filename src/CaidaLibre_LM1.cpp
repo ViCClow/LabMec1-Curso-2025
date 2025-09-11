@@ -14,6 +14,7 @@
 
 /* ============================= */
 void TimeDisplay();
+void BarrierTrigered(int barrier, double &time);
 
 const int BAUDRATE = 9600;
 
@@ -107,14 +108,14 @@ void loop() {
     // }
 
     // Para B3
-    BarrierTrigered(2, t3);
+    //BarrierTrigered(2, t3);
     //if (photoResPrevStates[2] == LOW && photoResStates[2] == HIGH && t3 == 0) {
     //  t3 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar tercera barrera
     //  digitalWrite(laserPins[2], LOW);
     // }
 
     // Para B4
-    BarrierTrigered(3, t4); 
+    //BarrierTrigered(3, t4); 
    // if (photoResPrevStates[3] == LOW && photoResStates[3] == HIGH && t4 == 0) {
    //   t4 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar cuarta barrera
    //   digitalWrite(laserPins[3], LOW);
@@ -158,5 +159,4 @@ void BarrierTrigered(int i, double &t) {
       t = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar barrera
       digitalWrite(laserPins[i], LOW);
     }
-  // Placeholder for future use
 }
