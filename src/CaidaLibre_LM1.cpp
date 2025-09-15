@@ -27,12 +27,15 @@ bool start = 1;
 
 const int laserPins[] = {3, 5, 7, 9};           // Pines conectados a los láseres
 const int photoResPins[] = {4, 6, 8, 10};   // Pines conectados a las fotoresistencias
-int button = 2;                       // Pin de reset de la barrera
+const int magnetPin = 13;                    // Pin del electroiman
+const int button = 2;                       // Pin de reset de la barrera
 
 int numPairs = sizeof(laserPins)/sizeof(laserPins[0]);  // Numero de modulos
 
 bool photoResStates[sizeof(photoResPins)/sizeof(photoResPins[0])]; // Estados actuales
 bool photoResPrevStates[sizeof(photoResPins)/sizeof(photoResPins[0])]; // Estados previos
+
+bool magnetState = false;
 
 
 void setup() {
@@ -44,6 +47,8 @@ void setup() {
 
   t_inicial = millis();
   pinMode(button, INPUT_PULLUP);
+  pinMode(magnetPin, OUTPUT);
+  digitalWrite(magnetPin, LOW); // Inicializa el electroiman apagado
 
   //================= Inicializar pines ===============//
   for (int i = 0; i < numPairs; ++i) {
@@ -59,7 +64,11 @@ void setup() {
 
 void loop() {
 
+
+  digitalWrite(magnetPin, HIGH);
+  
   TimeDisplay();
+
 
   //============ Restart button ============//
   //  For debugging uncomment the Serial.println line
@@ -79,6 +88,8 @@ void loop() {
     t2 = 0;
     t3 = 0;
     t4 = 0;
+
+    digitalWrite(magnetPin, LOW);
 
     t_inicial = (double)millis();
     for (int i = 0; i < numPairs; ++i) {
@@ -108,14 +119,14 @@ void loop() {
     // }
 
     // Para B3
-    //BarrierTrigered(2, t3);
+    BarrierTrigered(2, t3);
     //if (photoResPrevStates[2] == LOW && photoResStates[2] == HIGH && t3 == 0) {
     //  t3 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar tercera barrera
     //  digitalWrite(laserPins[2], LOW);
     // }
 
     // Para B4
-    //BarrierTrigered(3, t4); 
+    BarrierTrigered(3, t4); 
    // if (photoResPrevStates[3] == LOW && photoResStates[3] == HIGH && t4 == 0) {
    //   t4 = ((double)millis() - t_inicial) / 1000.0;  // Tiempo transcurrido tras pasar cuarta barrera
    //   digitalWrite(laserPins[3], LOW);
