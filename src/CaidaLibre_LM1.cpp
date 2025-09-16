@@ -110,23 +110,13 @@ void loop() {
  
 
   for (int Barrera = 0; Barrera < numPairs; ++Barrera) {
-  
     if (photoResPrevStates[Barrera] == LOW && photoResStates[Barrera] == HIGH) {
       // Check if already triggered
-      bool alreadyTriggered = false;
-      for (int j = 0; j < triggerCount; ++j) {
-        if (triggeredBarriers[j] == Barrera) {
-          alreadyTriggered = true;
-          break;
-        }
-      }
-      if (!alreadyTriggered && triggerCount < numPairs) {
         triggeredBarriers[triggerCount] = triggerCount;
         
         triggeredTimes[triggerCount] = ((double)millis() - t_inicial) / 1000.0;
         digitalWrite(laserPins[Barrera], LOW);
         triggerCount++;
-      }
     }
   }
   
