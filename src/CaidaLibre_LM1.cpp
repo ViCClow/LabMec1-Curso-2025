@@ -14,7 +14,6 @@
 
 /* ============================= */
 void TimeDisplay();
-void BarrierTrigered(int barrier, double &time);
 
 const int BAUDRATE = 9600;
 
@@ -107,11 +106,11 @@ void loop() {
 
   //=========== Measure time ============//
 
- 
-
   for (int Barrera = 0; Barrera < numPairs; ++Barrera) {
+    Serial.print("Contador de estados previo: "); Serial.println(photoResStates[Barrera]);
     if (photoResPrevStates[Barrera] == LOW && photoResStates[Barrera] == HIGH) {
-      // Check if already triggered
+      Serial.print("Contador de estados: "); Serial.println(photoResStates[Barrera]);
+      // Add count to change to next barrier.
         triggeredBarriers[triggerCount] = triggerCount;
         
         triggeredTimes[triggerCount] = ((double)millis() - t_inicial) / 1000.0;
