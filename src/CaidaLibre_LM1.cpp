@@ -5,7 +5,7 @@
 
 /* Librerias */
 
-//#include "Adafruit_VL53L0X.h" //Libreria para sensor ToF
+#include "VL53L0X.h" //Libreria para sensor ToF
 
 #include <Arduino.h>
 
@@ -18,6 +18,7 @@ void TimeDisplay();
 const int BAUDRATE = 9600;
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
+VL53L0X sensor;
 
 double t_inicial = 0;
 bool start = 1;
@@ -41,6 +42,10 @@ bool magnetState = false;
 
 void setup() {
   Serial.begin(BAUDRATE);
+  Wire.begin();
+  // ====== Sensor ToF ====== //
+  sensor.init();
+  sensor.setTimeout(500);
   // ====== LCD ========//
   lcd.init();
   lcd.backlight();
@@ -107,15 +112,24 @@ void loop() {
   //=========== Measure time ============//
 
   for (int Barrera = 0; Barrera < numPairs; ++Barrera) {
-    Serial.print("Contador de estados previo: "); Serial.println(photoResStates[Barrera]);
+    //Serial.print("Contador de estados previo: "); Serial.println(photoResStates[Barrera]);
     if (photoResPrevStates[Barrera] == LOW && photoResStates[Barrera] == HIGH) {
-      Serial.print("Contador de estados: "); Serial.println(photoResStates[Barrera]);
+      //Serial.print("Contador de estados: "); Serial.println(photoResStates[Barrera]);
       // Add count to change to next barrier.
         triggeredBarriers[triggerCount] = triggerCount;
         
         triggeredTimes[triggerCount] = ((double)millis() - t_inicial) / 1000.0;
         digitalWrite(laserPins[Barrera], LOW);
         triggerCount++;
+
+        // === VL53L0X Single Shot ===
+        uint16_t distance = sensor.readRangeSingleMillimeters();
+        if (sensor.timeoutOccurred()) {
+          Serial.println("VL53L0X TIMEOUT");
+        } else {
+          Serial.print("VL53L0X Distance (mm): ");
+          Serial.println(distance);
+        }
     }
   }
   
