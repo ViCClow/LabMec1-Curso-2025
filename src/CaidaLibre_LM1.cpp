@@ -75,8 +75,6 @@ void loop() {
 
   digitalWrite(magnetPin, HIGH);
 
-  TimeDisplay();
-
 
   //============ Restart button ============//
   //  For debugging uncomment the Serial.println line
@@ -122,7 +120,6 @@ void loop() {
         
         triggeredTimes[triggerCount] = ((double)millis() - t_inicial) / 1000.0;
         digitalWrite(laserPins[Barrera], LOW);
-        triggerCount++;
 
         // === VL53L0X Single Shot ===
         uint16_t distance = sensor.readRangeSingleMillimeters();
@@ -133,6 +130,9 @@ void loop() {
           Serial.println(distance);
           triggeredDistances[triggerCount] = distance;
         }
+
+        triggerCount++;
+        TimeDisplay();
     }
   }
   
@@ -156,7 +156,7 @@ void TimeDisplay() {
         lcd.print(triggeredTimes[i]);
         lcd.print("s");
 
-        lcd.setCursor(10, i);
+        lcd.setCursor(11, i);
         lcd.print(triggeredDistances[i]);
         lcd.print("mm");
     } else {
