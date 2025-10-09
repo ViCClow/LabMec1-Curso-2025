@@ -37,6 +37,8 @@ int triggerCount = 0; // Contador de barreras activadas
 bool photoResStates[sizeof(photoResPins)/sizeof(photoResPins[0])]; // Estados actuales
 bool photoResPrevStates[sizeof(photoResPins)/sizeof(photoResPins[0])]; // Estados previos
 
+uint16_t triggeredDistances[numPairs] = {0, 0, 0, 0}; // Distancias medidas por VL53L0X
+
 bool magnetState = false;
 
 
@@ -129,6 +131,7 @@ void loop() {
         } else {
           Serial.print("VL53L0X Distance (mm): ");
           Serial.println(distance);
+          triggeredDistances[triggerCount] = distance;
         }
     }
   }
@@ -152,8 +155,12 @@ void TimeDisplay() {
         lcd.print(":");
         lcd.print(triggeredTimes[i]);
         lcd.print("s");
+
+        lcd.setCursor(10, i);
+        lcd.print(triggeredDistances[i]);
+        lcd.print("mm");
     } else {
-      lcd.print("B-:0.000s");
+      lcd.print("B-:0.000s         ");
     }
   }
 return ;
