@@ -25,8 +25,8 @@ bool start = 1;
 
 const int laserPins[] = {3, 5, 7, 9};           // Pines conectados a los láseres
 const int photoResPins[] = {4, 6, 8, 10};   // Pines conectados a las fotoresistencias
-const int magnetPin = 2;                    // Pin del electroiman
-const int button = 11;                       // Pin de reset de la barrera
+const int magnetPin = 11;                    // Pin del electroiman
+const int button = 2;                       // Pin de reset de la barrera
 
 const int numPairs = sizeof(laserPins)/sizeof(laserPins[0]);  // Numero de modulos/barreras
 
