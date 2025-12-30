@@ -1,4 +1,4 @@
-/* ===== EXPERIMENTO CAIDA LIBRE ===== */
+   /* ===== EXPERIMENTO CAIDA LIBRE ===== */
 // Codigo utilizado en el experimento de caida libre diseñado para
 // el curso Laboratorio 1: Mecanica I del segundo (2°) semestre de la
 // carrera de Ciencias Fisicas - FCFM - Universidad de Concepcion.
@@ -14,6 +14,7 @@
 
 /* ============================= */
 void TimeDisplay();
+void WelcomeMsg();
 
 const int BAUDRATE = 9600;
 
@@ -42,6 +43,13 @@ uint16_t triggeredDistances[numPairs] = {0, 0, 0, 0}; // Distancias medidas por 
 bool magnetState = false;
 
 
+// Variables para manejo del botón (debounce y estado estable)
+bool prevButtonState = false;
+bool buttonStableState = false;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50; // ms
+
+
 void setup() {
   Serial.begin(BAUDRATE);
   Wire.begin();
@@ -51,6 +59,8 @@ void setup() {
   // ====== LCD ========//
   lcd.init();
   lcd.backlight();
+
+  WelcomeMsg();
 // =================//
 
   t_inicial = millis();
@@ -72,42 +82,51 @@ void setup() {
 
 void loop() {
 
-
-  digitalWrite(magnetPin, HIGH);
-
-
-  //============ Restart button ============//
-  //  For debugging uncomment the Serial.println line
-  bool pressed = digitalRead(button); // Standby state = 0
-  Serial.println(pressed); 
+  //============ Manejo del botón con debounce ============//
+  int rawButton = digitalRead(button); // INPUT_PULLUP: pressed -> LOW
+  bool pressedNow = (rawButton == LOW);
 
   //=========== Read photoresistors ============//
-  // For debugging uncomment the Serial.print lines:
   for (int i = 0; i < numPairs; ++i) {
     photoResStates[i] = digitalRead(photoResPins[i]);
-    //Serial.print("Sensor "); Serial.print(i); Serial.print(": "); Serial.println(photoResStates[i]);
   }
 
-  //=========== Reset ============//
-  if (pressed) {
-
-    digitalWrite(magnetPin, LOW);
-
-    for (int i = 0; i < numPairs; ++i) {
-      triggeredBarriers[i] = -1;
-      triggeredTimes[i] = 0;
-    }
-    triggerCount = 0;
-
-    t_inicial = (double)millis();
-    for (int i = 0; i < numPairs; ++i) {
-      digitalWrite(laserPins[i], HIGH);
-      photoResPrevStates[i] = photoResStates[i]; //Reinicia estado previo.
-    }
-  
-    lcd.clear();
-    TimeDisplay();
+  if (pressedNow != prevButtonState) {
+    lastDebounceTime = millis();
   }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (pressedNow != buttonStableState) {
+      buttonStableState = pressedNow;
+      if (buttonStableState) { // evento: botón PRESIONADO
+        if (!magnetState) {
+          // Primer pulsado: encender imán y reiniciar barreras y display
+          magnetState = true;
+          digitalWrite(magnetPin, HIGH);
+
+          for (int i = 0; i < numPairs; ++i) {
+            triggeredBarriers[i] = -1;
+            triggeredTimes[i] = 0;
+            triggeredDistances[i] = 0;
+          }
+          triggerCount = 0;
+
+          t_inicial = (double)millis();
+          for (int i = 0; i < numPairs; ++i) {
+            digitalWrite(laserPins[i], HIGH);
+            photoResPrevStates[i] = photoResStates[i]; //Reinicia estado previo.
+          }
+          lcd.clear();
+          TimeDisplay();
+        } else {
+          // Segundo pulsado: apagar imán SIN reiniciar nada
+          magnetState = false;
+          digitalWrite(magnetPin, LOW);
+        }
+      }
+    }
+  }
+  prevButtonState = pressedNow;
 
   //=========== Measure time ============//
 
@@ -145,20 +164,33 @@ void loop() {
 
 //============ Funciones (Try objects when you can.) ===========//
 
+void WelcomeMsg() {
+  lcd.setCursor(0, 0);
+  lcd.print("  Experimento de ");
+  lcd.setCursor(0, 1);
+  lcd.print("   Caida Libre   ");
+  delay(2000);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Presione boton");
+  lcd.setCursor(0, 1);
+  lcd.print("para iniciar");
+  return ;
+}
+
 void TimeDisplay() {
-
-  for (int i = 0; i < triggerCount; ++i) {
+  for (int i = 0; i < numPairs; ++i) {
     lcd.setCursor(0, i);
-    if(triggeredBarriers[i] != -1) {
-        lcd.print("B");
-        lcd.print(triggeredBarriers[i] + 1);
-        lcd.print(":");
-        lcd.print(triggeredTimes[i]);
-        lcd.print("s");
+    if (i < triggerCount && triggeredBarriers[i] != -1) {
+      lcd.print("B");
+      lcd.print(triggeredBarriers[i] + 1);
+      lcd.print(":");
+      lcd.print(triggeredTimes[i]);
+      lcd.print("s");
 
-        lcd.setCursor(11, i);
-        lcd.print(triggeredDistances[i]);
-        lcd.print("mm");
+      lcd.setCursor(11, i);
+      lcd.print(triggeredDistances[i]);
+      lcd.print("mm");
     } else {
       lcd.print("B-:0.000s         ");
     }
